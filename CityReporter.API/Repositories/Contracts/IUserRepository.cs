@@ -1,5 +1,5 @@
 ﻿using CityReporter.API.Entities;
-using CityReporter.Models.DTOs;
+using CityReporter.Models.DTOs.UserDtos;
 
 namespace CityReporter.API.Repositories.Contracts
 {
@@ -11,7 +11,7 @@ namespace CityReporter.API.Repositories.Contracts
         Task<bool> UpdateItem(UpdateUserDto user);
         Task<User> Login(LoginDto credentials);
         Task<bool> DeleteItem(int Id);
-        Task<bool> UpdateCredentials(LoginDto credentials, int UserId);
+        Task<bool> UpdateUserPassword(LoginDto credentials);
 
     }
 }

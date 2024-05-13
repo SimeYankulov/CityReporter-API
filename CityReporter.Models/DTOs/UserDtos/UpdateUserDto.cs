@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CityReporter.Models.DTOs
+namespace CityReporter.Models.DTOs.UserDtos
 {
     public class UpdateUserDto
     {

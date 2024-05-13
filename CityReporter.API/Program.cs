@@ -4,6 +4,7 @@ using CityReporter.API.Repositories;
 using CityReporter.API.Repositories.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -68,6 +69,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("CityReporterConn
 );
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 var app = builder.Build();
 

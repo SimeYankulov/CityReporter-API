@@ -1,5 +1,5 @@
 ﻿using CityReporter.API.Entities;
-using CityReporter.Models.DTOs;
+using CityReporter.Models.DTOs.UserDtos;
 
 namespace CityReporter.API.Extensions
 {

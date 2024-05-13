@@ -1,7 +1,6 @@
 ﻿using CityReporter.API.Entities;
-using CityReporter.API.Extensions;
 using CityReporter.API.Repositories.Contracts;
-using CityReporter.Models.DTOs;
+using CityReporter.Models.DTOs.UserDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,15 +10,19 @@ using System.Text;
 
 namespace CityReporter.API.Controllers
 {
-    [Route("User")]
+    [Route("user")]
     public class UserController:ControllerBase
     {
         private readonly IUserRepository userRepository;
         private IConfiguration _config;
+
+        //public ILogger Logger { get; }
+
         public UserController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
             _config = config;
+            //Logger = logger;
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -43,6 +46,7 @@ namespace CityReporter.API.Controllers
 
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error retriving data from the database : "+ex.Message);
+                
             }
         }
         [HttpGet("{UserId:int}")]
@@ -64,9 +68,11 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
+                //Logger.LogError(ex.ToString());
 
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error retriving data from the database:" + ex.Message);
+
             }
         }
         [HttpPost]
@@ -104,7 +110,7 @@ namespace CityReporter.API.Controllers
             }
         }
         [AllowAnonymous]
-        [HttpPost("/Login")]
+        [HttpPost("/user/login")]
         public async Task<ActionResult<ResponseLogin>> LoginUser(LoginDto credentials)
         {
 
@@ -150,13 +156,13 @@ namespace CityReporter.API.Controllers
         }
 
 
-        [HttpDelete("{Id:int}")]
+        [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> DeleteUser(int Id)
+        public async Task<ActionResult<bool>> DeleteUser(int id)
         {
             try
             {
-                var result = await this.userRepository.DeleteItem(Id);
+                var result = await this.userRepository.DeleteItem(id);
 
                 if (result)
                 {
@@ -175,7 +181,7 @@ namespace CityReporter.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin,Guest")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<bool>> UpdateUser([FromBody]UpdateUserDto user)
         {
             try
@@ -196,13 +202,14 @@ namespace CityReporter.API.Controllers
             }
         }
 
-        [HttpPut("/UpdateCredentials")]
-        [Authorize(Roles = "Guest")]
-        public async Task<ActionResult<bool>> UpdateUserCredentials([FromBody]LoginDto credentials, int UserId)
+        [HttpPut("/user/password")]
+        //[Authorize(Roles = "User")]
+        [AllowAnonymous]
+        public async Task<ActionResult<bool>> UpdateUserPassword([FromBody]LoginDto credentials)
         {
             try
             {
-                var result = await this.userRepository.UpdateCredentials(credentials, UserId);
+                var result = await this.userRepository.UpdateUserPassword(credentials);
 
                 if (result)
                 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CityReporter.Models.DTOs
+namespace CityReporter.Models.DTOs.UserDtos
 {
     public class LoginDto
     {

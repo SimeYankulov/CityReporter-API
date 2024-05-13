@@ -2,13 +2,10 @@
 using CityReporter.API.Entities;
 using CityReporter.API.Extensions;
 using CityReporter.API.Repositories.Contracts;
-using CityReporter.Models.DTOs;
+using CityReporter.Models.DTOs.UserDtos;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace CityReporter.API.Repositories
 {
@@ -42,6 +39,7 @@ namespace CityReporter.API.Repositories
 
         public async Task<IEnumerable<User>> GetItems()
         {
+
             return await this.cityReporterDBContext.Users.ToListAsync();
         }
 
@@ -76,13 +74,14 @@ namespace CityReporter.API.Repositories
             return result.Entity;
         }
 
-        public async Task<bool> UpdateCredentials(LoginDto credentials, int UserId)
+        public async Task<bool> UpdateUserPassword(LoginDto credentials)
         {
-            var userToUpdate = await this.cityReporterDBContext.Users.FindAsync(UserId);
+            var userToUpdate = await this.cityReporterDBContext.Users
+                                                .Where( u => u.Email.Equals(credentials.Email))
+                                                .FirstOrDefaultAsync();
 
             if(userToUpdate != null)
             {
-                userToUpdate.Email = credentials.Email;
 
                 byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
 
