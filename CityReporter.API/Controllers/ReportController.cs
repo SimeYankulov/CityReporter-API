@@ -1,5 +1,5 @@
-﻿using CityReporter.API.Repositories.Contracts;
-using CityReporter.Models.DTOs.ReportDtos;
+﻿using CityReporter.Models.DTOs.ReportDtos;
+using CityReporter.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,16 +8,16 @@ namespace CityReporter.API.Controllers
     [Route("reports")]
     public class ReportController : ControllerBase
     {
-        private readonly IReportRepository reportRepository;
+        private readonly IReportsService reportService;
 
-        public ReportController(IReportRepository reportRepository)
+        public ReportController(IReportsService reportService)
         {
-            this.reportRepository = reportRepository;
+            this.reportService = reportService;
         }
 
         [HttpPost("/report")]
-        //[Authorize(Roles = "User")]
-        [AllowAnonymous]
+        [Authorize(Roles = "User")]
+        //[AllowAnonymous]
         public async Task<ActionResult<bool>> PostReport([FromBody]CreateReportDto report)
         {
             try
@@ -26,7 +26,7 @@ namespace CityReporter.API.Controllers
                 {
                     Console.WriteLine();
                 }
-                var result = await this.reportRepository.PostReport(report);
+                var result = await this.reportService.PostReport(report);
 
                 if(result) return Ok(result);
                 else
@@ -48,7 +48,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var reports = await this.reportRepository.GetItems();
+                var reports = await this.reportService.GetItems();
 
                 if(reports.Count() > 0)
                 {
@@ -68,13 +68,13 @@ namespace CityReporter.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        //[Authorize(Roles = "Guest")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Guest")]
+        //[AllowAnonymous]
         public async Task<ActionResult<ResponseReportWithStatusDto>> GetReport(int id)
         {
             try
             {
-                var reports = await this.reportRepository.GetItems();
+                var reports = await this.reportService.GetItems();
 
                 if(reports != null)
                 {
@@ -99,7 +99,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var report = await this.reportRepository.GetItemsStatus(id);
+                var report = await this.reportService.GetItemsStatus(id);
 
                 if(report != null)
                 {
@@ -124,7 +124,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var result = await this.reportRepository.PutItem(id, report);
+                var result = await this.reportService.PutItem(id, report);
 
                 if (result)
                 {
@@ -144,7 +144,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var result = await this.reportRepository.PutStatus(id,statusId);
+                var result = await this.reportService.PutStatus(id,statusId);
 
                 if (result)
                 {
@@ -165,7 +165,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var result = await this.reportRepository.DeleteItem(id);
+                var result = await this.reportService.DeleteItem(id);
 
                 if (result)
                 {

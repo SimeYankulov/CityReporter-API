@@ -1,11 +1,15 @@
-﻿using CityReporter.API.Entities;
+﻿
+using CityReporter.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 
-namespace CityReporter.API.Data
+namespace CityReporter.Data.Data
 {
     public class CityReporterDBContext:DbContext
     {
+        public CityReporterDBContext():base()
+        {
+
+        }
         public CityReporterDBContext(DbContextOptions<CityReporterDBContext> options):base(options)
         {
 

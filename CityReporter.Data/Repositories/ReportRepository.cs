@@ -1,11 +1,9 @@
-﻿using CityReporter.API.Data;
-using CityReporter.API.Extensions;
-using CityReporter.API.Repositories.Contracts;
-using CityReporter.Models.DTOs.ReportDtos;
-using Microsoft.AspNetCore.Mvc;
+﻿using CityReporter.Data.Data;
+using CityReporter.Data.Entities;
+using CityReporter.Data.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace CityReporter.API.Repositories
+namespace CityReporter.Data.Repositories
 {
     public class ReportRepository : IReportRepository
     {
@@ -28,7 +26,7 @@ namespace CityReporter.API.Repositories
             return false;
         }
 
-        public async Task<ResponseReportWithStatusDto> GetItem(int id)
+        public async Task<Report> GetItem(int id)
         {
             var report = await this.cityReporterDBContext.Reports
                                                 .Include(r => r.Status)
@@ -36,34 +34,34 @@ namespace CityReporter.API.Repositories
 
             if (report != null)
             {
-                return report.ConvertToDto();
+                return report;
             }
-            else return new ResponseReportWithStatusDto(); 
+            else return new Report(); 
         }
 
-        public async Task<IEnumerable<ResponseReportDto>> GetItems()
+        public async Task<IEnumerable<Report>> GetItems()
         {
             var reports = await this.cityReporterDBContext.Reports.ToListAsync();
 
-            return reports.ConvertToDto();
+            return reports;
         }
 
-        public async Task<IEnumerable<ResponseReportWithStatusDto>> GetItemsStatus(int id)
+        public async Task<IEnumerable<Report>> GetItemsStatus(int id)
         {
             var items = await this.cityReporterDBContext.Reports
                                                         .Include(r => r.Status)
                                                         .Where(r => r.StatusId == id)
                                                         .ToListAsync();
 
-            return items.ConvertToReportWithStatusDto();
+            return items;
         }
 
-        public async Task<bool> PostReport(CreateReportDto report)
+        public async Task<bool> PostReport(Report report)
         {
             
             if (report.Title != null)
             {
-                var result = await this.cityReporterDBContext.Reports.AddAsync(report.ConvertToEntity());
+                var result = await this.cityReporterDBContext.Reports.AddAsync(report);
            
      
 
@@ -77,7 +75,7 @@ namespace CityReporter.API.Repositories
             return false;
         }
 
-        public async Task<bool> PutItem(int id, CreateReportDto report)
+        public async Task<bool> PutItem(int id, Report report)
         {
             var reportToUpdate = await this.cityReporterDBContext.Reports.FindAsync(id);
 

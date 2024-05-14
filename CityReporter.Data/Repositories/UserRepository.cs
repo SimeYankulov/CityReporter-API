@@ -1,13 +1,12 @@
-﻿using CityReporter.API.Data;
-using CityReporter.API.Entities;
-using CityReporter.API.Extensions;
-using CityReporter.API.Repositories.Contracts;
+﻿using CityReporter.Data.Data;
+using CityReporter.Data.Entities;
+using CityReporter.Data.Repositories.Contracts;
 using CityReporter.Models.DTOs.UserDtos;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
-namespace CityReporter.API.Repositories
+namespace CityReporter.Data.Repositories
 {
     public class UserRepository:IUserRepository
     {
@@ -34,7 +33,10 @@ namespace CityReporter.API.Repositories
 
         public async Task<User> GetItem(int Id)
         {
-            return await this.cityReporterDBContext.Users.FindAsync(Id);
+            var result = await this.cityReporterDBContext.Users.FindAsync(Id);
+
+            if (result != null) return result;
+            else return new User();
         }
 
         public async Task<IEnumerable<User>> GetItems()
@@ -57,21 +59,20 @@ namespace CityReporter.API.Repositories
             return new User();
         }
 
-        public async Task<User> PostItem(RegisterUserDto user)
+        public async Task<bool> PostItem(User user)
         {
-            var userEntity = user.ConvertToEntity();
 
             byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
 
 
-            userEntity.Password = PasswordHash(salt,user.Password);
-            userEntity.Salt = salt;
+            user.Password = PasswordHash(salt,user.Password);
+            user.Salt = salt;
 
-            var result = await this.cityReporterDBContext.AddAsync(userEntity);
+            var result = await this.cityReporterDBContext.AddAsync(user);
 
             await this.cityReporterDBContext.SaveChangesAsync();
 
-            return result.Entity;
+            if (result.Entity != null) { return true; } else return false;
         }
 
         public async Task<bool> UpdateUserPassword(LoginDto credentials)
@@ -104,7 +105,7 @@ namespace CityReporter.API.Repositories
             return false;
         }
 
-        public async Task<bool> UpdateItem(UpdateUserDto user)
+        public async Task<bool> UpdateItem(User user)
         {
             var userToUpdate = await this.cityReporterDBContext.Users.FindAsync(user.Id);
 

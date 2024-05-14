@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace CityReporter.API.Migrations
+namespace CityReporter.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddedReports : Migration
