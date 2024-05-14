@@ -1,9 +1,8 @@
-﻿using CityReporter.API.Entities;
-using CityReporter.Models.DTOs.ReportDtos;
+﻿using CityReporter.Models.DTOs.ReportDtos;
 
-namespace CityReporter.API.Repositories.Contracts
+namespace CityReporter.Services.Contracts
 {
-    public interface IReportRepository
+    public interface IReportsService
     {
         Task<bool> PostReport(CreateReportDto report);
         Task<IEnumerable<ResponseReportDto>> GetItems();

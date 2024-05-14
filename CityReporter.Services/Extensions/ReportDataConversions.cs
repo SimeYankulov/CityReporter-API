@@ -1,7 +1,7 @@
-﻿using CityReporter.API.Entities;
+﻿using CityReporter.Data.Entities;
 using CityReporter.Models.DTOs.ReportDtos;
 
-namespace CityReporter.API.Extensions
+namespace CityReporter.Services.Extensions
 {
     public static class ReportDataConversions
     {
@@ -27,7 +27,7 @@ namespace CityReporter.API.Extensions
                         Location = report.Location,
                         Status = report.Status.StatusTitle
                     }).ToList();
-        } 
+        }
         public static IEnumerable<ResponseReportDto> ConvertToDto(this IEnumerable<Report> reports)
         {
             return (from report in reports
@@ -53,5 +53,5 @@ namespace CityReporter.API.Extensions
                 Status = report.Status.StatusTitle
             };
         }
-     }
+    }
 }

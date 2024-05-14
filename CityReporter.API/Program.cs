@@ -1,10 +1,10 @@
-
-using CityReporter.API.Data;
-using CityReporter.API.Repositories;
-using CityReporter.API.Repositories.Contracts;
+using CityReporter.Data.Data;
+using CityReporter.Data.Repositories;
+using CityReporter.Data.Repositories.Contracts;
+using CityReporter.Services;
+using CityReporter.Services.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -70,6 +70,11 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("CityReporterConn
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
+builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IReportsService,ReportsService>();
+
+builder.Services.AddLogging(logging => logging.AddConsole());
 
 var app = builder.Build();
 

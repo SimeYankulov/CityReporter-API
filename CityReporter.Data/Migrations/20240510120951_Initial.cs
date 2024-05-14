@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace CityReporter.API.Migrations
+namespace CityReporter.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

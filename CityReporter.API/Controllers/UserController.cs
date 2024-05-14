@@ -1,36 +1,29 @@
-﻿using CityReporter.API.Entities;
-using CityReporter.API.Repositories.Contracts;
+﻿using CityReporter.Data.Entities;
 using CityReporter.Models.DTOs.UserDtos;
+using CityReporter.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace CityReporter.API.Controllers
 {
     [Route("user")]
     public class UserController:ControllerBase
     {
-        private readonly IUserRepository userRepository;
-        private IConfiguration _config;
+        private readonly IUserService userService;
+        private ILogger<UserController> _logger;
 
-        //public ILogger Logger { get; }
-
-        public UserController(IUserRepository userRepository, IConfiguration config)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
-            this.userRepository = userRepository;
-            _config = config;
-            //Logger = logger;
+            this.userService = userService;
+            _logger = logger;
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ResponseUserDto>>> GetUsers()
         {
             try
             {
-                var users = await this.userRepository.GetItems();
+                var users = await userService.GetItems();
 
                 if(users == null)
                 {
@@ -43,19 +36,20 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error retriving data from the database : "+ex.Message);
                 
             }
         }
-        [HttpGet("{UserId:int}")]
+        [HttpGet("{Id:int}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<User>> GetUser(int UserId)
+        
+        public async Task<ActionResult<User>> GetUser(int Id)
         {
             try
             {
-                var user = await this.userRepository.GetItem(UserId);
+                var user = await this.userService.GetItem(Id);
 
                 if(user != null)
                 {
@@ -68,7 +62,7 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-                //Logger.LogError(ex.ToString());
+                _logger.LogError(ex.ToString());
 
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error retriving data from the database:" + ex.Message);
@@ -81,29 +75,22 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var newUser = await this.userRepository.PostItem(userDto);
+                var result = await this.userService.PostItem(userDto);
 
-                if(newUser == null)
+                if (!result)
                 {
                     return BadRequest();
                 }
-
-                var user = await this.userRepository.GetItem(newUser.Id);
-
-                if(user == null)
-                {
-                    return BadRequest();
-                }
-
                 else
                 {
-                    return Ok(user);
+                    return Ok(result);
                 }
 
 
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
 
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error writing data in the database:" + ex.Message);
@@ -116,38 +103,20 @@ namespace CityReporter.API.Controllers
 
             try
             {
-                var result = await this.userRepository.Login(credentials);
+                var result = await this.userService.Login(credentials);
 
-                if (result != null)
+                if(result.Jwt != null)
                 {
-                    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-                    var credentialss = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-                    var claims = new[]
-                    {
-                     new Claim(ClaimTypes.Email, result.Email!),
-                     new Claim(ClaimTypes.Role, result.Role)
-                     };
-                    var token = new JwtSecurityToken(
-                            _config["Jwt:Issuer"],
-                            _config["Jwt:Audience"],
-                            claims,
-                            expires: DateTime.Now.AddMinutes(15),
-                            signingCredentials: credentialss
-                        );
-
-                    return new ResponseLogin() {
-                        Jwt = new JwtSecurityTokenHandler().WriteToken(token),
-                        Role = result.Role };
-                
+                    return Ok(result);
                 }
                 else
                 {
-                    return BadRequest();
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
 
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error retriving data from the database:" + ex.Message);
@@ -162,7 +131,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var result = await this.userRepository.DeleteItem(id);
+                var result = await this.userService.DeleteItem(id);
 
                 if (result)
                 {
@@ -175,6 +144,8 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
+
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error removing data in the databse " + ex.Message);
             }
@@ -186,7 +157,7 @@ namespace CityReporter.API.Controllers
         {
             try
             {
-                var result = await this.userRepository.UpdateItem(user);
+                var result = await this.userService.UpdateItem(user);
 
                 if (result)
                 {
@@ -197,19 +168,21 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
+
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error updating data in the database " + ex.Message);
             }
         }
 
         [HttpPut("/user/password")]
-        //[Authorize(Roles = "User")]
-        [AllowAnonymous]
+        [Authorize(Roles = "User")]
+        
         public async Task<ActionResult<bool>> UpdateUserPassword([FromBody]LoginDto credentials)
         {
             try
             {
-                var result = await this.userRepository.UpdateUserPassword(credentials);
+                var result = await this.userService.UpdateUserPassword(credentials);
 
                 if (result)
                 {
@@ -219,6 +192,8 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
+
                 return StatusCode(StatusCodes.Status400BadRequest,
                     "Error updating data in the database " + ex.Message);
             }
