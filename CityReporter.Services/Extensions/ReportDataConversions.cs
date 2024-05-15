@@ -5,6 +5,7 @@ namespace CityReporter.Services.Extensions
 {
     public static class ReportDataConversions
     {
+
         public static Report ConvertToEntity(this CreateReportDto report)
         {
             return new Report
@@ -50,7 +51,7 @@ namespace CityReporter.Services.Extensions
                 Image = report.Image,
                 Description = report.Description,
                 Location = report.Location,
-                Status = report.Status.StatusTitle
+                //Status = report.Status.StatusTitle
             };
         }
     }

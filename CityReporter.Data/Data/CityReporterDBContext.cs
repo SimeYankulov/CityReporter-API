@@ -24,7 +24,7 @@ namespace CityReporter.Data.Data
             base.OnModelCreating(modelBuilder);
 
             
-            modelBuilder.Entity<Status>().HasData( // Automatically add these records to the Category table
+            modelBuilder.Entity<Status>().HasData( 
             new Status { Id = 1, StatusTitle = "Draft" },
             new Status { Id = 2, StatusTitle = "In proggress" },
             new Status { Id = 3, StatusTitle = "Approved" },

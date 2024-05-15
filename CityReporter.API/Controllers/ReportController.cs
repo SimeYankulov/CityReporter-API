@@ -2,6 +2,7 @@
 using CityReporter.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Buffers.Text;
 
 namespace CityReporter.API.Controllers
 {
@@ -16,9 +17,8 @@ namespace CityReporter.API.Controllers
         }
 
         [HttpPost("/report")]
-        [Authorize(Roles = "User")]
-        //[AllowAnonymous]
-        public async Task<ActionResult<bool>> PostReport([FromBody]CreateReportDto report)
+        //[Authorize(Roles = "User")]
+        public async Task<ActionResult<bool>> PostReport(CreateReportDto report)
         {
             try
             {
@@ -42,8 +42,6 @@ namespace CityReporter.API.Controllers
             }
         }
         [HttpGet]
-        //[Authorize(Roles = "Guest")]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ResponseReportDto>>> GetReports()
         {
             try
@@ -68,17 +66,17 @@ namespace CityReporter.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [Authorize(Roles = "Guest")]
-        //[AllowAnonymous]
+        //[Authorize(Roles = "Guest")]
         public async Task<ActionResult<ResponseReportWithStatusDto>> GetReport(int id)
         {
             try
             {
-                var reports = await this.reportService.GetItems();
+                var report = await this.reportService.GetItem(id);
 
-                if(reports != null)
+                if(report != null)
                 {
-                    return Ok(reports);
+                    //String photo = "data:image/jpg;base64," + Convert.ToBase64String(report.Image);
+                    return Ok(report);
                 }
                 else
                 {
