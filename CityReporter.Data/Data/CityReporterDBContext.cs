@@ -18,6 +18,7 @@ namespace CityReporter.Data.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Status> Statuses { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
