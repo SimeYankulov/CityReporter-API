@@ -41,6 +41,14 @@ namespace CityReporter.Services
 
         public async Task<bool> PostReport(CreateReportDto report)
         {
+            if(report.ImageFile == null || report.ImageFile.Length ==0 ) {
+                return false;
+            }
+
+            using var memoryStream = new MemoryStream();
+            await report.ImageFile.CopyToAsync(memoryStream);
+            report.Image = memoryStream.ToArray();
+
             return await this.reportRepository.PostReport(report.ConvertToEntity());
         }
 

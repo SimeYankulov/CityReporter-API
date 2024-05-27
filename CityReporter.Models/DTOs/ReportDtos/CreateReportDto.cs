@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace CityReporter.Models.DTOs.ReportDtos
 {
@@ -6,7 +7,7 @@ namespace CityReporter.Models.DTOs.ReportDtos
     {
         [Required]
         public string Title { get; set; }
-        [Required]
+        public IFormFile ImageFile { get; set; }
         public byte[] Image { get; set; }
         [Required]
         public string Description { get; set; } 

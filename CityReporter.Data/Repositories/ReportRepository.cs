@@ -60,12 +60,14 @@ namespace CityReporter.Data.Repositories
         {
             
             if (report.Title != null)
-            {
+            { 
                 var result = await this.cityReporterDBContext.Reports.AddAsync(report);
-           
-     
 
-            var newReport =await this.cityReporterDBContext.Reports.FindAsync(result.Entity.Id);
+                await this.cityReporterDBContext.SaveChangesAsync();
+
+                var newReport =await this.cityReporterDBContext.Reports.FindAsync(result.Entity.Id);
+
+       
 
             if(newReport != null)
             {
