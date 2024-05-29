@@ -113,6 +113,7 @@ namespace CityReporter.Data.Repositories
             }
 
             reportToUpdate.StatusId = statusId;
+            this.cityReporterDBContext.Update(reportToUpdate); 
             await this.cityReporterDBContext.SaveChangesAsync();
 
             return true;
