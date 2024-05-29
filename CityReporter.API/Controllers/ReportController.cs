@@ -2,7 +2,6 @@
 using CityReporter.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Buffers.Text;
 
 namespace CityReporter.API.Controllers
 {
@@ -10,14 +9,16 @@ namespace CityReporter.API.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IReportsService reportService;
+        private readonly ILogger<ReportController> _logger;
 
-        public ReportController(IReportsService reportService)
+        public ReportController(IReportsService reportService, ILogger<ReportController> logger)
         {
             this.reportService = reportService;
+            this._logger = logger;
         }
 
         [HttpPost("/report")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<bool>> PostReport(CreateReportDto report)
         {
             try
@@ -36,7 +37,7 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error writing data in the database : " + ex.Message);
             }
@@ -59,14 +60,14 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error retriving data from the database : " + ex.Message);
             }
         }
 
         [HttpGet("{id:int}")]
-        //[Authorize(Roles = "Guest")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<ResponseReportWithStatusDto>> GetReport(int id)
         {
             try
@@ -85,7 +86,7 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error retriving data from the database : " + ex.Message);
             }
@@ -110,7 +111,7 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error retriving data from the database : " + ex.Message);
             }
@@ -152,7 +153,7 @@ namespace CityReporter.API.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return StatusCode(StatusCodes.Status400BadRequest,
                "Error writing data in the database : " + ex.Message);
             }
@@ -171,10 +172,11 @@ namespace CityReporter.API.Controllers
                 }
                 else return BadRequest();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                _logger.LogError(ex.ToString());
+                return StatusCode(StatusCodes.Status400BadRequest,
+               "Error deleting data in the database : " + ex.Message);
             }
         }
     }

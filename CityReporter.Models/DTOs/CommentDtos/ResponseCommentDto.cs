@@ -3,8 +3,8 @@
     public class ResponseCommentDto
     {
         public int userId { get; set; }
-        public int commentId { get; set; }
+        public int reportId { get; set; }
         public DateTime postedOn { get; set; }
-        public string commentText { get; set; }
+        public string commentContent { get; set; }
     }
 }
