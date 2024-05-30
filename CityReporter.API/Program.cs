@@ -3,6 +3,8 @@ using CityReporter.Data.Repositories;
 using CityReporter.Data.Repositories.Contracts;
 using CityReporter.Services;
 using CityReporter.Services.Contracts;
+using CityReporter.Services.Services;
+using CityReporter.Services.Services.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -70,9 +72,13 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("CityReporterConn
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
 
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IReportsService,ReportsService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
 
 builder.Services.AddLogging(logging => logging.AddConsole());
 
@@ -88,7 +94,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
 
 app.MapControllers();
 
